@@ -41,4 +41,23 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    public function getUsers(string | null $search = '')
+    {
+        //this faz referência a variável model em UserController
+        $users = $this->where(function($query) use ($search) {
+            if($search){
+                $query->where('email', $search);
+                $query->orWhere('name', 'LIKE', "%{$search}%");
+            }
+        })->get();
+
+        return $users;
+    }
+
+    public function comments()
+    {
+        //hasMany relacionamento 1 pra Muitos
+        return $this->hasMany(Comment::class, 'user_id', 'id');
+    }
 }
